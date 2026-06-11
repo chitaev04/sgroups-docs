@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ---
 id: hosts
 sidebar_position: 4
@@ -124,32 +123,19 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
       "hosts": [
         {
           "metadata": {
-            "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6",
+            "uid": "c3d4e5f6-a7b8-9012-cdef-123456789012",
             "name": "node-01",
             "namespace": "production",
             "labels": {
               "role": "worker"
             },
-            "annotations": {},
-            "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-            "resourceVersion": "183"
+            "creationTimestamp": "2025-01-15T10:10:00Z",
+            "resourceVersion": "1"
           },
           "spec": {
             "displayName": "Node 01",
             "comment": "Рабочий узел",
-            "description": "Первый рабочий узел кластера",
-            "IPs": {
-              "IPv4": [],
-              "IPv6": []
-            },
-            "metaInfo": {
-              "hostName": "",
-              "os": "",
-              "platform": "",
-              "platformFamily": "",
-              "platformVersion": "",
-              "kernelVersion": ""
-            }
+            "description": "Первый рабочий узел кластера"
           }
         }
       ]
@@ -212,12 +198,9 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
   </tbody>
 </table>
 
-> *Для этой операции необходимо указать все три поля: `uid`, `name` и `namespace`.
+> *Необходимо указать `uid` **или** комбинацию `name` + `namespace`.
 
-#### Примеры запроса
-
-<Tabs groupId="host-delete">
-  <TabItem value="uid" label="uid" default>
+#### Пример запроса
 
 <CodeBlock language="bash">
   {dedent`
@@ -227,26 +210,7 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
         "hosts": [
           {
             "metadata": {
-              "uid": "a7222de3-6f4b-403d-8fa6-7177f65c00f2"
-            }
-          }
-        ]
-      }'
-  `}
-</CodeBlock>
-
-  </TabItem>
-  <TabItem value="name" label="name + namespace">
-
-<CodeBlock language="bash">
-  {dedent`
-    curl -X POST http://localhost:9006/v1/hosts/delete \\
-      -H 'Content-Type: application/json' \\
-      -d '{
-        "hosts": [
-          {
-            "metadata": {
-              "name": "docs-del-host-name-152112",
+              "name": "node-01",
               "namespace": "production"
             }
           }
@@ -255,31 +219,13 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
   `}
 </CodeBlock>
 
-  </TabItem>
-</Tabs>
-
-#### Примеры ответа
-
-<Tabs groupId="host-delete">
-  <TabItem value="uid" label="uid" default>
+#### Пример ответа
 
 <CodeBlock language="json">
   {dedent`
     {}
   `}
 </CodeBlock>
-
-  </TabItem>
-  <TabItem value="name" label="name + namespace">
-
-<CodeBlock language="json">
-  {dedent`
-    {}
-  `}
-</CodeBlock>
-
-  </TabItem>
-</Tabs>
 
 <Restrictions items={[
   { label: 'delete', rules: RESTRICTIONS.deleteWithNamespace },
@@ -493,334 +439,882 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
   </tbody>
 </table>
 
-#### Примеры ответа
+#### Пример ответа
+
+<CodeBlock language="json">
+  {dedent`
+    {
+      "resourceVersion": "42",
+      "hosts": [
+        {
+          "metadata": {
+            "uid": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+            "name": "node-01",
+            "namespace": "production",
+            "labels": {
+              "role": "worker"
+            },
+            "creationTimestamp": "2025-01-15T10:10:00Z",
+            "resourceVersion": "3"
+          },
+          "spec": {
+            "displayName": "Node 01",
+            "comment": "Рабочий узел",
+            "description": "Первый рабочий узел кластера",
+            "IPs": {
+              "IPv4": [
+                "10.0.1.10",
+                "10.0.1.11"
+              ],
+              "IPv6": [
+                "fd00::1:10"
+              ]
+            },
+            "metaInfo": {
+              "hostName": "node-01.example.com",
+              "os": "linux",
+              "platform": "ubuntu",
+              "platformFamily": "debian",
+              "platformVersion": "22.04",
+              "kernelVersion": "5.15.0-91-generic"
+            }
+          },
+          "refs": [
+            {
+              "name": "web-servers",
+              "namespace": "production",
+              "resType": "AddressGroup"
+            }
+          ]
+        }
+      ]
+    }
+  `}
+</CodeBlock>
+
+<Restrictions items={[
+  { label: 'selectors', rules: RESTRICTIONS.selectors },
+]} />
+
+<Codes codes={['invalidArgument', 'internal']} />
+
+</ApiOperation>
+
+---
+
+## nft/List
+
+<ApiOperation method="POST" endpoint="/v1/hosts/nft/list">
+
+ Возвращает список хостов с правилами nftables и возможностью фильтрации. Возвращает ответ в виде `json` и `text`.
+
+#### Тело запроса
+
+<table>
+  <thead>
+    <tr>
+      <th>Параметр</th>
+      <th>Обязательность</th>
+      <th>Тип</th>
+      <th>Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>selectors[].name</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.name.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].namespace</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.namespace.short}</td>
+    </tr>
+  </tbody>
+</table>
+
+#### Примеры запроса
+
+:::info Правила комбинирования
+- Между элементами массива `selectors[]` действует логическое **ИЛИ** (OR).
+- Для хоста в `refs[]` допустим только `resType: "AddressGroup"`.
+:::
 
 <Tabs groupId="host-list">
   <TabItem value="name" label="name" default>
 
-<CodeBlock language="json">
+<CodeBlock language="bash">
   {dedent`
-    {
-      "resourceVersion": "197",
-      "hosts": [
-        {
-          "metadata": {
-            "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6",
-            "name": "node-01",
-            "namespace": "production",
-            "labels": {
-              "role": "worker"
-            },
-            "annotations": {},
-            "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-            "resourceVersion": "183"
-          },
-          "spec": {
-            "displayName": "Node 01",
-            "comment": "Рабочий узел",
-            "description": "Первый рабочий узел кластера",
-            "IPs": {
-              "IPv4": [],
-              "IPv6": []
-            },
-            "metaInfo": {
-              "hostName": "",
-              "os": "",
-              "platform": "",
-              "platformFamily": "",
-              "platformVersion": "",
-              "kernelVersion": ""
-            }
-          },
-          "refs": [
-            {
-              "name": "web-servers",
-              "namespace": "production",
-              "resType": "AddressGroup"
-            }
-          ]
-        }
-      ]
-    }
-  `}
-</CodeBlock>
-
-  </TabItem>
-  <TabItem value="refs" label="refs">
-
-<CodeBlock language="json">
-  {dedent`
-    {
-      "resourceVersion": "197",
-      "hosts": [
-        {
-          "metadata": {
-            "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6",
-            "name": "node-01",
-            "namespace": "production",
-            "labels": {
-              "role": "worker"
-            },
-            "annotations": {},
-            "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-            "resourceVersion": "183"
-          },
-          "spec": {
-            "displayName": "Node 01",
-            "comment": "Рабочий узел",
-            "description": "Первый рабочий узел кластера",
-            "IPs": {
-              "IPv4": [],
-              "IPv6": []
-            },
-            "metaInfo": {
-              "hostName": "",
-              "os": "",
-              "platform": "",
-              "platformFamily": "",
-              "platformVersion": "",
-              "kernelVersion": ""
-            }
-          },
-          "refs": [
-            {
-              "name": "web-servers",
-              "namespace": "production",
-              "resType": "AddressGroup"
-            }
-          ]
-        }
-      ]
-    }
-  `}
-</CodeBlock>
-
-  </TabItem>
-  <TabItem value="labels" label="labels">
-
-<CodeBlock language="json">
-  {dedent`
-    {
-      "resourceVersion": "197",
-      "hosts": [
-        {
-          "metadata": {
-            "uid": "d1314a7f-d4fb-4699-9ccd-e43b41588c00",
-            "name": "node-02",
-            "namespace": "production",
-            "labels": {
-              "role": "worker"
-            },
-            "annotations": {},
-            "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-            "resourceVersion": "87"
-          },
-          "spec": {
-            "displayName": "Node 02",
-            "comment": "",
-            "description": "",
-            "IPs": {
-              "IPv4": [],
-              "IPv6": []
-            },
-            "metaInfo": {
-              "hostName": "",
-              "os": "",
-              "platform": "",
-              "platformFamily": "",
-              "platformVersion": "",
-              "kernelVersion": ""
-            }
-          },
-          "refs": [
-            {
-              "name": "api-servers",
-              "namespace": "production",
-              "resType": "AddressGroup"
-            }
-          ]
-        },
-        {
-          "metadata": {
-            "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6",
-            "name": "node-01",
-            "namespace": "production",
-            "labels": {
-              "role": "worker"
-            },
-            "annotations": {},
-            "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-            "resourceVersion": "183"
-          },
-          "spec": {
-            "displayName": "Node 01",
-            "comment": "Рабочий узел",
-            "description": "Первый рабочий узел кластера",
-            "IPs": {
-              "IPv4": [],
-              "IPv6": []
-            },
-            "metaInfo": {
-              "hostName": "",
-              "os": "",
-              "platform": "",
-              "platformFamily": "",
-              "platformVersion": "",
-              "kernelVersion": ""
-            }
-          },
-          "refs": [
-            {
-              "name": "web-servers",
-              "namespace": "production",
-              "resType": "AddressGroup"
-            }
-          ]
-        }
-      ]
-    }
-  `}
-</CodeBlock>
-
-  </TabItem>
-  <TabItem value="and" label="AND">
-
-<CodeBlock language="json">
-  {dedent`
-    {
-      "resourceVersion": "197",
-      "hosts": [
-        {
-          "metadata": {
-            "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6",
-            "name": "node-01",
-            "namespace": "production",
-            "labels": {
-              "role": "worker"
-            },
-            "annotations": {},
-            "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-            "resourceVersion": "183"
-          },
-          "spec": {
-            "displayName": "Node 01",
-            "comment": "Рабочий узел",
-            "description": "Первый рабочий узел кластера",
-            "IPs": {
-              "IPv4": [],
-              "IPv6": []
-            },
-            "metaInfo": {
-              "hostName": "",
-              "os": "",
-              "platform": "",
-              "platformFamily": "",
-              "platformVersion": "",
-              "kernelVersion": ""
-            }
-          },
-          "refs": [
-            {
-              "name": "web-servers",
-              "namespace": "production",
-              "resType": "AddressGroup"
-            }
-          ]
-        }
-      ]
-    }
-  `}
-</CodeBlock>
-
-  </TabItem>
-  <TabItem value="or" label="OR">
-
-<CodeBlock language="json">
-  {dedent`
-    {
-      "resourceVersion": "197",
-      "hosts": [
-        {
-          "metadata": {
-            "uid": "d1314a7f-d4fb-4699-9ccd-e43b41588c00",
-            "name": "node-02",
-            "namespace": "production",
-            "labels": {
-              "role": "worker"
-            },
-            "annotations": {},
-            "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-            "resourceVersion": "87"
-          },
-          "spec": {
-            "displayName": "Node 02",
-            "comment": "",
-            "description": "",
-            "IPs": {
-              "IPv4": [],
-              "IPv6": []
-            },
-            "metaInfo": {
-              "hostName": "",
-              "os": "",
-              "platform": "",
-              "platformFamily": "",
-              "platformVersion": "",
-              "kernelVersion": ""
-            }
-          },
-          "refs": [
-            {
-              "name": "api-servers",
-              "namespace": "production",
-              "resType": "AddressGroup"
-            }
-          ]
-        },
-        {
-          "metadata": {
-            "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6",
-            "name": "node-01",
-            "namespace": "production",
-            "labels": {
-              "role": "worker"
-            },
-            "annotations": {},
-            "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-            "resourceVersion": "183"
-          },
-          "spec": {
-            "displayName": "Node 01",
-            "comment": "Рабочий узел",
-            "description": "Первый рабочий узел кластера",
-            "IPs": {
-              "IPv4": [],
-              "IPv6": []
-            },
-            "metaInfo": {
-              "hostName": "",
-              "os": "",
-              "platform": "",
-              "platformFamily": "",
-              "platformVersion": "",
-              "kernelVersion": ""
-            }
-          },
-          "refs": [
-            {
-              "name": "web-servers",
-              "namespace": "production",
-              "resType": "AddressGroup"
-            }
-          ]
-        }
-      ]
-    }
+    curl -X POST http://localhost:9006/v1/hosts/nft/list \\
+      -H 'Content-Type: application/json' \\
+      -d '{
+        "selectors": [
+          {
+              "name": "node-01",
+              "namespace": "production"
+          }
+        ]
+      }'
   `}
 </CodeBlock>
 
   </TabItem>
 </Tabs>
+
+#### Поля ответа
+
+<table>
+  <thead>
+    <tr>
+      <th>Поле</th>
+      <th>Тип</th>
+      <th>Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>hosts[].name</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.name.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].namespace</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.namespace.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].nft.json</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.name.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].nft.text</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.name.short}</td>
+    </tr>    
+  </tbody>
+</table>
+
+#### Пример ответа
+
+<CodeBlock language="json">
+  {dedent`
+    {
+      "hosts": [
+        {
+          "name": "node-01",
+          "namespace": "production",
+          "nft": [
+        {
+          "json": "string",
+          "text": "string"
+        }
+      ]
+    }
+  `}
+</CodeBlock>
+
+<Restrictions items={[
+  { label: 'selectors', rules: RESTRICTIONS.selectors },
+]} />
+
+<Codes codes={['invalidArgument', 'internal']} />
+
+</ApiOperation>
+
+---
+
+## nft/Watch
+
+<ApiOperation method="POST" endpoint="/v1/hosts/nft/Watch">
+
+ Серверный стриминг — возвращает поток изменений хостов с правилами nftables и возможностью фильтрации. Возвращает ответ в виде `json` и `text`.
+
+#### Тело запроса
+
+<table>
+  <thead>
+    <tr>
+      <th>Параметр</th>
+      <th>Обязательность</th>
+      <th>Тип</th>
+      <th>Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>selectors[].name</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.name.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].namespace</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.namespace.short}</td>
+    </tr>
+  </tbody>
+</table>
+
+#### Примеры запроса
+
+:::info Правила комбинирования
+- Между элементами массива `selectors[]` действует логическое **ИЛИ** (OR).
+- Для хоста в `refs[]` допустим только `resType: "AddressGroup"`.
+:::
+
+<Tabs groupId="host-list">
+  <TabItem value="name" label="name" default>
+
+<CodeBlock language="bash">
+  {dedent`
+    curl -X POST http://localhost:9006/v1/hosts/nft/watch \\
+      -H 'Content-Type: application/json' \\
+      -d '{
+        "selectors": [
+          {
+              "name": "node-01",
+              "namespace": "production"
+          }
+        ]
+      }'
+  `}
+</CodeBlock>
+
+  </TabItem>
+</Tabs>
+
+#### Поля ответа
+
+<table>
+  <thead>
+    <tr>
+      <th>Поле</th>
+      <th>Тип</th>
+      <th>Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>hosts[].name</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.name.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].namespace</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.namespace.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].nft.json</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.name.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].nft.text</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.name.short}</td>
+    </tr>    
+  </tbody>
+</table>
+
+#### Пример ответа
+
+<CodeBlock language="json">
+  {dedent`
+    {
+      "hosts": [
+        {
+          "name": "node-01",
+          "namespace": "production",
+          "nft": [
+        {
+          "json": "string",
+          "text": "string"
+        }
+      ]
+    }
+  `}
+</CodeBlock>
+
+<Restrictions items={[
+  { label: 'selectors', rules: RESTRICTIONS.selectors },
+]} />
+
+<Codes codes={['invalidArgument', 'internal']} />
+
+</ApiOperation>
+
+---
+
+## ss/List
+
+<ApiOperation method="POST" endpoint="/v1/hosts/ss/list">
+
+ Этот метод возвращает текущие сетевые соединения (TCP/UDP) c привязкой к процессам для указанного хоста.
+
+#### Тело запроса
+
+<table>
+  <thead>
+    <tr>
+      <th>Параметр</th>
+      <th>Обязательность</th>
+      <th>Тип</th>
+      <th>Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>selectors[].name</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.name.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].namespace</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.namespace.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].comm</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.comm.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].family</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.family.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].ifname</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.ifname.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].inode</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.inode.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].localAddr</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.localAddr.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].localPort</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.localPort.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].pid</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.pid.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].protocol</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.protocol.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].remoteAddr</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.remoteAddr.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].remotePort</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.remotePort.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].state</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.state.short}</td>
+    </tr>
+  </tbody>
+</table>
+
+#### Примеры запроса
+
+:::info Правила комбинирования
+- Между элементами массива `selectors[]` действует логическое **ИЛИ** (OR).
+- Для хоста в `refs[]` допустим только `resType: "AddressGroup"`.
+:::
+
+<Tabs groupId="host-list">
+  <TabItem value="name" label="name" default>
+
+<CodeBlock language="bash">
+  {dedent`
+    curl -X POST http://localhost:9006/v1/hosts/nft/list \\
+      -H 'Content-Type: application/json' \\
+      -d '{
+        "selectors": [
+          {
+              "filters": [
+                {
+                  "comm": "nginx",
+                  "family": "IPV4",
+                  "ifname": "eth0",
+                  "inode": "789012",
+                  "localAddr": "192.168.1.10",
+                  "localPort": 443,
+                  "pid": 4782,
+                  "protocol": "TCP",
+                  "remoteAddr": "10.0.0.5",
+                  "remotePort": 443,
+                  "state": "LISTEN"
+                }
+              ],
+              "name": "node-01",
+              "namespace": "production"
+          }
+        ]
+      }'
+  `}
+</CodeBlock>
+
+  </TabItem>
+</Tabs>
+
+#### Поля ответа
+
+<table>
+  <thead>
+    <tr>
+      <th>Поле</th>
+      <th>Тип</th>
+      <th>Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>hosts[].name</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.name.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].namespace</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.namespace.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].family</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.family.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].ifname</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.ifname.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].inode</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.inode.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].localAddr</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.localAddr.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].localPort</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.localPort.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].processes[].cmdLine</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.cmdLine.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].processes[].comm</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.comm.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].processes[].exe</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.exe.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].processes[].fd</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.fd.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].processes[].pid</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.pid.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].pid</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.pid.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].protocol</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.protocol.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].remoteAddr</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.remoteAddr.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].remotePort</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.remotePort.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].state</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.state.short}</td>
+    </tr>
+  </tbody>
+</table>
+
+#### Пример ответа
+
+<CodeBlock language="json">
+  {dedent`
+    {
+  "hosts": [
+    {
+      "name": "node-01",
+      "namespace": "production",
+      "stats": [
+        {
+          "family": "IPV4",
+          "ifname": "eth0",
+          "inode": "eth0",
+          "localAddr": "192.168.1.10",
+          "localPort": 443,
+          "processes": [
+            {
+              "cmdLine": "/app/main.py --port 8080",
+              "comm": "nginx",
+              "exe": "/usr/sbin/nginx",
+              "fd": 256,
+              "pid": 4782
+            }
+          ],
+          "protocol": "TCP",
+          "remoteAddr": "10.0.0.5",
+          "remotePort": 443,
+          "state": "LISTEN"
+        }
+      ]
+    }
+  ]
+}
+  `}
+</CodeBlock>
+
+<Restrictions items={[
+  { label: 'selectors', rules: RESTRICTIONS.selectors },
+]} />
+
+<Codes codes={['invalidArgument', 'internal']} />
+
+</ApiOperation>
+
+---
+
+## ss/Watch
+
+<ApiOperation method="POST" endpoint="/v1/hosts/ss/Watch">
+
+ Серверный стриминг — возвращает поток изменений сетевых соединений (TCP/UDP) c привязкой к процессам для указанного хоста
+
+#### Тело запроса
+
+<table>
+  <thead>
+    <tr>
+      <th>Параметр</th>
+      <th>Обязательность</th>
+      <th>Тип</th>
+      <th>Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>selectors[].name</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.name.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].namespace</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.namespace.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].comm</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.comm.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].family</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.family.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].ifname</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.ifname.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].inode</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.inode.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].localAddr</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.localAddr.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].localPort</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.localPort.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].pid</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.pid.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].protocol</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.protocol.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].remoteAddr</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.remoteAddr.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].remotePort</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.remotePort.short}</td>
+    </tr>
+    <tr>
+      <td><code>selectors[].filters[].state</code></td>
+      <td>нет</td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.state.short}</td>
+    </tr>
+  </tbody>
+</table>
+
+#### Примеры запроса
+
+:::info Правила комбинирования
+- Между элементами массива `selectors[]` действует логическое **ИЛИ** (OR).
+- Для хоста в `refs[]` допустим только `resType: "AddressGroup"`.
+:::
+
+<Tabs groupId="host-list">
+  <TabItem value="name" label="name" default>
+
+<CodeBlock language="bash">
+  {dedent`
+    curl -X POST http://localhost:9006/v1/hosts/nft/list \\
+      -H 'Content-Type: application/json' \\
+      -d '{
+        "selectors": [
+          {
+              "filters": [
+                {
+                  "comm": "nginx",
+                  "family": "IPV4",
+                  "ifname": "eth0",
+                  "inode": "789012",
+                  "localAddr": "192.168.1.10",
+                  "localPort": 443,
+                  "pid": 4782,
+                  "protocol": "TCP",
+                  "remoteAddr": "10.0.0.5",
+                  "remotePort": 443,
+                  "state": "LISTEN"
+                }
+              ],
+              "name": "node-01",
+              "namespace": "production"
+          }
+        ]
+      }'
+  `}
+</CodeBlock>
+
+  </TabItem>
+</Tabs>
+
+#### Поля ответа
+
+<table>
+  <thead>
+    <tr>
+      <th>Поле</th>
+      <th>Тип</th>
+      <th>Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>hosts[].name</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.name.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].namespace</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.namespace.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].family</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.family.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].ifname</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.ifname.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].inode</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.inode.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].localAddr</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.localAddr.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].localPort</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.localPort.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].processes[].cmdLine</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.cmdLine.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].processes[].comm</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.comm.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].processes[].exe</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.exe.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].processes[].fd</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.fd.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].processes[].pid</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.pid.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].pid</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.pid.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].protocol</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.protocol.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].remoteAddr</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.remoteAddr.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].remotePort</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.remotePort.short}</td>
+    </tr>
+    <tr>
+      <td><code>hosts[].stats[].state</code></td>
+      <td><code>{TYPES.string}</code></td>
+      <td>{DICTIONARY.state.short}</td>
+    </tr>
+  </tbody>
+</table>
+
+#### Пример ответа
+
+<CodeBlock language="json">
+  {dedent`
+    {
+  "hosts": [
+    {
+      "name": "node-01",
+      "namespace": "production",
+      "stats": [
+        {
+          "family": "IPV4",
+          "ifname": "eth0",
+          "inode": "eth0",
+          "localAddr": "192.168.1.10",
+          "localPort": 443,
+          "processes": [
+            {
+              "cmdLine": "/app/main.py --port 8080",
+              "comm": "nginx",
+              "exe": "/usr/sbin/nginx",
+              "fd": 256,
+              "pid": 4782
+            }
+          ],
+          "protocol": "TCP",
+          "remoteAddr": "10.0.0.5",
+          "remotePort": 443,
+          "state": "LISTEN"
+        }
+      ]
+    }
+  ]
+}
+  `}
+</CodeBlock>
 
 <Restrictions items={[
   { label: 'selectors', rules: RESTRICTIONS.selectors },
@@ -901,7 +1395,7 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
             }
           }
         ],
-        "resourceVersion": "197"
+        "resourceVersion": "0"
       }'
   `}
 </CodeBlock>
@@ -929,7 +1423,7 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
             }
           }
         ],
-        "resourceVersion": "197"
+        "resourceVersion": "0"
       }'
   `}
 </CodeBlock>
@@ -949,7 +1443,7 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
             }
           }
         ],
-        "resourceVersion": "197"
+        "resourceVersion": "0"
       }'
   `}
 </CodeBlock>
@@ -979,7 +1473,7 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
             }
           }
         ],
-        "resourceVersion": "197"
+        "resourceVersion": "0"
       }'
   `}
 </CodeBlock>
@@ -1004,7 +1498,7 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
             }
           }
         ],
-        "resourceVersion": "197"
+        "resourceVersion": "0"
       }'
   `}
 </CodeBlock>
@@ -1031,270 +1525,55 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
   </tbody>
 </table>
 
-#### Примеры ответа
-
-<Tabs groupId="host-watch">
-  <TabItem value="name" label="name" default>
+#### Пример ответа
 
 <CodeBlock language="json">
   {dedent`
     {
-      "result": {
-        "type": "MODIFIED",
-        "hosts": [
-          {
-            "metadata": {
-              "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6",
-              "name": "node-01",
+      "type": "MODIFIED",
+      "hosts": [
+        {
+          "metadata": {
+            "uid": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+            "name": "node-01",
+            "namespace": "production",
+            "resourceVersion": "4"
+          },
+          "spec": {
+            "displayName": "Node 01",
+            "comment": "Рабочий узел",
+            "description": "Первый рабочий узел кластера",
+            "IPs": {
+              "IPv4": [
+                "10.0.1.10",
+                "10.0.1.11",
+                "10.0.1.12"
+              ],
+              "IPv6": [
+                "fd00::1:10"
+              ]
+            },
+            "metaInfo": {
+              "hostName": "node-01.example.com",
+              "os": "linux",
+              "platform": "ubuntu",
+              "platformFamily": "debian",
+              "platformVersion": "22.04",
+              "kernelVersion": "5.15.0-91-generic"
+            }
+          },
+          "refs": [
+            {
+              "name": "web-servers",
               "namespace": "production",
-              "labels": {
-                "role": "worker"
-              },
-              "annotations": {},
-              "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-              "resourceVersion": "198"
-            },
-            "spec": {
-              "displayName": "Node 01",
-              "comment": "Рабочий узел",
-              "description": "Первый рабочий узел кластера",
-              "IPs": {
-                "IPv4": [],
-                "IPv6": []
-              },
-              "metaInfo": {
-                "hostName": "",
-                "os": "",
-                "platform": "",
-                "platformFamily": "",
-                "platformVersion": "",
-                "kernelVersion": ""
-              }
-            },
-            "refs": [
-              {
-                "name": "web-servers",
-                "namespace": "production",
-                "resType": "AddressGroup"
-              }
-            ]
-          }
-        ]
-      }
+              "resType": "AddressGroup"
+            }
+          ]
+        }
+      ]
     }
   `}
 </CodeBlock>
-
-  </TabItem>
-  <TabItem value="refs" label="refs">
-
-<CodeBlock language="json">
-  {dedent`
-    {
-      "result": {
-        "type": "MODIFIED",
-        "hosts": [
-          {
-            "metadata": {
-              "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6",
-              "name": "node-01",
-              "namespace": "production",
-              "labels": {
-                "role": "worker"
-              },
-              "annotations": {},
-              "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-              "resourceVersion": "198"
-            },
-            "spec": {
-              "displayName": "Node 01",
-              "comment": "Рабочий узел",
-              "description": "Первый рабочий узел кластера",
-              "IPs": {
-                "IPv4": [],
-                "IPv6": []
-              },
-              "metaInfo": {
-                "hostName": "",
-                "os": "",
-                "platform": "",
-                "platformFamily": "",
-                "platformVersion": "",
-                "kernelVersion": ""
-              }
-            },
-            "refs": [
-              {
-                "name": "web-servers",
-                "namespace": "production",
-                "resType": "AddressGroup"
-              }
-            ]
-          }
-        ]
-      }
-    }
-  `}
-</CodeBlock>
-
-  </TabItem>
-  <TabItem value="labels" label="labels">
-
-<CodeBlock language="json">
-  {dedent`
-    {
-      "result": {
-        "type": "MODIFIED",
-        "hosts": [
-          {
-            "metadata": {
-              "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6",
-              "name": "node-01",
-              "namespace": "production",
-              "labels": {
-                "role": "worker"
-              },
-              "annotations": {},
-              "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-              "resourceVersion": "198"
-            },
-            "spec": {
-              "displayName": "Node 01",
-              "comment": "Рабочий узел",
-              "description": "Первый рабочий узел кластера",
-              "IPs": {
-                "IPv4": [],
-                "IPv6": []
-              },
-              "metaInfo": {
-                "hostName": "",
-                "os": "",
-                "platform": "",
-                "platformFamily": "",
-                "platformVersion": "",
-                "kernelVersion": ""
-              }
-            },
-            "refs": [
-              {
-                "name": "web-servers",
-                "namespace": "production",
-                "resType": "AddressGroup"
-              }
-            ]
-          }
-        ]
-      }
-    }
-  `}
-</CodeBlock>
-
-  </TabItem>
-  <TabItem value="and" label="AND">
-
-<CodeBlock language="json">
-  {dedent`
-    {
-      "result": {
-        "type": "MODIFIED",
-        "hosts": [
-          {
-            "metadata": {
-              "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6",
-              "name": "node-01",
-              "namespace": "production",
-              "labels": {
-                "role": "worker"
-              },
-              "annotations": {},
-              "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-              "resourceVersion": "198"
-            },
-            "spec": {
-              "displayName": "Node 01",
-              "comment": "Рабочий узел",
-              "description": "Первый рабочий узел кластера",
-              "IPs": {
-                "IPv4": [],
-                "IPv6": []
-              },
-              "metaInfo": {
-                "hostName": "",
-                "os": "",
-                "platform": "",
-                "platformFamily": "",
-                "platformVersion": "",
-                "kernelVersion": ""
-              }
-            },
-            "refs": [
-              {
-                "name": "web-servers",
-                "namespace": "production",
-                "resType": "AddressGroup"
-              }
-            ]
-          }
-        ]
-      }
-    }
-  `}
-</CodeBlock>
-
-  </TabItem>
-  <TabItem value="or" label="OR">
-
-<CodeBlock language="json">
-  {dedent`
-    {
-      "result": {
-        "type": "MODIFIED",
-        "hosts": [
-          {
-            "metadata": {
-              "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6",
-              "name": "node-01",
-              "namespace": "production",
-              "labels": {
-                "role": "worker"
-              },
-              "annotations": {},
-              "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-              "resourceVersion": "198"
-            },
-            "spec": {
-              "displayName": "Node 01",
-              "comment": "Рабочий узел",
-              "description": "Первый рабочий узел кластера",
-              "IPs": {
-                "IPv4": [],
-                "IPv6": []
-              },
-              "metaInfo": {
-                "hostName": "",
-                "os": "",
-                "platform": "",
-                "platformFamily": "",
-                "platformVersion": "",
-                "kernelVersion": ""
-              }
-            },
-            "refs": [
-              {
-                "name": "web-servers",
-                "namespace": "production",
-                "resType": "AddressGroup"
-              }
-            ]
-          }
-        ]
-      }
-    }
-  `}
-</CodeBlock>
-
-  </TabItem>
-</Tabs>
 
 <Restrictions items={[
   { label: 'selectors', rules: RESTRICTIONS.selectors },
@@ -1306,7 +1585,7 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
 
 ---
 
-## Обновление IP-адресов
+## upd-ips
 
 <ApiOperation method="POST" endpoint="/v1/hosts/upd-ips">
 
@@ -1363,7 +1642,7 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
   </tbody>
 </table>
 
-> *Для этой операции необходимо указать все три поля: `uid`, `name` и `namespace`.
+> *Необходимо указать `uid` **или** комбинацию `name` + `namespace`.
 
 #### Пример запроса
 
@@ -1375,9 +1654,9 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
         "hosts": [
           {
             "metadata": {
-              "name": "node-01",
-              "namespace": "production",
-              "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6"
+              "name": "host-3",
+              "namespace": "namespace-1",
+              "uid": "f315d9db-691e-4e9c-9bfc-546d59d35a68"
             },
             "spec": {
               "IPs": {
@@ -1403,20 +1682,11 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
       "hosts": [
         {
           "metadata": {
-            "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6",
-            "name": "node-01",
-            "namespace": "production",
-            "labels": {
-              "role": "worker"
-            },
-            "annotations": {},
-            "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-            "resourceVersion": "205"
+            "uid": "f315d9db-691e-4e9c-9bfc-546d59d35a68",
+            "name": "host-3",
+            "namespace": "namespace-1"
           },
           "spec": {
-            "displayName": "Node 01",
-            "comment": "Рабочий узел",
-            "description": "Первый рабочий узел кластера",
             "IPs": {
               "IPv4": [
                 "127.0.0.1"
@@ -1424,14 +1694,6 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
               "IPv6": [
                 "::1"
               ]
-            },
-            "metaInfo": {
-              "hostName": "",
-              "os": "",
-              "platform": "",
-              "platformFamily": "",
-              "platformVersion": "",
-              "kernelVersion": ""
             }
           }
         }
@@ -1450,7 +1712,7 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
 
 ---
 
-## Обновление метаинформации
+## upd-metainfo
 
 <ApiOperation method="POST" endpoint="/v1/hosts/upd-metainfo">
 
@@ -1545,7 +1807,7 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
             "metadata": {
               "name": "node-01",
               "namespace": "production",
-              "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6"
+              "uid": "f315d9db-691e-4e9c-9bfc-546d59d35a68"
             },
             "spec": {
               "metaInfo": {
@@ -1571,28 +1833,11 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
       "hosts": [
         {
           "metadata": {
-            "uid": "023e074c-461d-4abd-8ee1-9c9604da49c6",
+            "uid": "f315d9db-691e-4e9c-9bfc-546d59d35a68",
             "name": "node-01",
-            "namespace": "production",
-            "labels": {
-              "role": "worker"
-            },
-            "annotations": {},
-            "creationTimestamp": "2026-04-25T21:12:33.030954Z",
-            "resourceVersion": "206"
+            "namespace": "production"
           },
           "spec": {
-            "displayName": "Node 01",
-            "comment": "Рабочий узел",
-            "description": "Первый рабочий узел кластера",
-            "IPs": {
-              "IPv4": [
-                "127.0.0.1"
-              ],
-              "IPv6": [
-                "::1"
-              ]
-            },
             "metaInfo": {
               "hostName": "node-01.example.com",
               "os": "linux",
@@ -1615,864 +1860,3 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
 <Codes codes={['invalidArgument', 'notFound', 'internal']} />
 
 </ApiOperation>
-=======
-commit 936189c14676c52e8fecf427472c8a8661b5a8f1
-Author: Chitaev <skomorohov04@gmail.com>
-Date:   Thu Jun 11 16:23:23 2026 +0400
-
-    add new_list_watch changes
-
-diff --git a/docs/api/hosts.mdx b/docs/api/hosts.mdx
-index fbff66b..9bf1c24 100644
---- a/docs/api/hosts.mdx
-+++ b/docs/api/hosts.mdx
-@@ -502,6 +502,830 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
- 
- ---
- 
-+## nft/List
-+
-+<ApiOperation method="POST" endpoint="/v1/hosts/nft/list">
-+
-+ Возвращает список хостов с правилами nftables и возможностью фильтрации. Возвращает ответ в виде `json` и `text`.
-+
-+#### Тело запроса
-+
-+<table>
-+  <thead>
-+    <tr>
-+      <th>Параметр</th>
-+      <th>Обязательность</th>
-+      <th>Тип</th>
-+      <th>Описание</th>
-+    </tr>
-+  </thead>
-+  <tbody>
-+    <tr>
-+      <td><code>selectors[].name</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.name.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].namespace</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.namespace.short}</td>
-+    </tr>
-+  </tbody>
-+</table>
-+
-+#### Примеры запроса
-+
-+:::info Правила комбинирования
-+- Между элементами массива `selectors[]` действует логическое **ИЛИ** (OR).
-+- Для хоста в `refs[]` допустим только `resType: "AddressGroup"`.
-+:::
-+
-+<Tabs groupId="host-list">
-+  <TabItem value="name" label="name" default>
-+
-+<CodeBlock language="bash">
-+  {dedent`
-+    curl -X POST http://localhost:9006/v1/hosts/nft/list \\
-+      -H 'Content-Type: application/json' \\
-+      -d '{
-+        "selectors": [
-+          {
-+              "name": "node-01",
-+              "namespace": "production"
-+          }
-+        ]
-+      }'
-+  `}
-+</CodeBlock>
-+
-+  </TabItem>
-+</Tabs>
-+
-+#### Поля ответа
-+
-+<table>
-+  <thead>
-+    <tr>
-+      <th>Поле</th>
-+      <th>Тип</th>
-+      <th>Описание</th>
-+    </tr>
-+  </thead>
-+  <tbody>
-+    <tr>
-+      <td><code>hosts[].name</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.name.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].namespace</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.namespace.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].nft.json</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.name.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].nft.text</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.name.short}</td>
-+    </tr>    
-+  </tbody>
-+</table>
-+
-+#### Пример ответа
-+
-+<CodeBlock language="json">
-+  {dedent`
-+    {
-+      "hosts": [
-+        {
-+          "name": "node-01",
-+          "namespace": "production",
-+          "nft": [
-+        {
-+          "json": "string",
-+          "text": "string"
-+        }
-+      ]
-+    }
-+  `}
-+</CodeBlock>
-+
-+<Restrictions items={[
-+  { label: 'selectors', rules: RESTRICTIONS.selectors },
-+]} />
-+
-+<Codes codes={['invalidArgument', 'internal']} />
-+
-+</ApiOperation>
-+
-+---
-+
-+## nft/Watch
-+
-+<ApiOperation method="POST" endpoint="/v1/hosts/nft/Watch">
-+
-+ Серверный стриминг — возвращает поток изменений хостов с правилами nftables и возможностью фильтрации. Возвращает ответ в виде `json` и `text`.
-+
-+#### Тело запроса
-+
-+<table>
-+  <thead>
-+    <tr>
-+      <th>Параметр</th>
-+      <th>Обязательность</th>
-+      <th>Тип</th>
-+      <th>Описание</th>
-+    </tr>
-+  </thead>
-+  <tbody>
-+    <tr>
-+      <td><code>selectors[].name</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.name.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].namespace</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.namespace.short}</td>
-+    </tr>
-+  </tbody>
-+</table>
-+
-+#### Примеры запроса
-+
-+:::info Правила комбинирования
-+- Между элементами массива `selectors[]` действует логическое **ИЛИ** (OR).
-+- Для хоста в `refs[]` допустим только `resType: "AddressGroup"`.
-+:::
-+
-+<Tabs groupId="host-list">
-+  <TabItem value="name" label="name" default>
-+
-+<CodeBlock language="bash">
-+  {dedent`
-+    curl -X POST http://localhost:9006/v1/hosts/nft/watch \\
-+      -H 'Content-Type: application/json' \\
-+      -d '{
-+        "selectors": [
-+          {
-+              "name": "node-01",
-+              "namespace": "production"
-+          }
-+        ]
-+      }'
-+  `}
-+</CodeBlock>
-+
-+  </TabItem>
-+</Tabs>
-+
-+#### Поля ответа
-+
-+<table>
-+  <thead>
-+    <tr>
-+      <th>Поле</th>
-+      <th>Тип</th>
-+      <th>Описание</th>
-+    </tr>
-+  </thead>
-+  <tbody>
-+    <tr>
-+      <td><code>hosts[].name</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.name.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].namespace</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.namespace.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].nft.json</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.name.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].nft.text</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.name.short}</td>
-+    </tr>    
-+  </tbody>
-+</table>
-+
-+#### Пример ответа
-+
-+<CodeBlock language="json">
-+  {dedent`
-+    {
-+      "hosts": [
-+        {
-+          "name": "node-01",
-+          "namespace": "production",
-+          "nft": [
-+        {
-+          "json": "string",
-+          "text": "string"
-+        }
-+      ]
-+    }
-+  `}
-+</CodeBlock>
-+
-+<Restrictions items={[
-+  { label: 'selectors', rules: RESTRICTIONS.selectors },
-+]} />
-+
-+<Codes codes={['invalidArgument', 'internal']} />
-+
-+</ApiOperation>
-+
-+---
-+
-+## ss/List
-+
-+<ApiOperation method="POST" endpoint="/v1/hosts/ss/list">
-+
-+ Этот метод возвращает текущие сетевые соединения (TCP/UDP) c привязкой к процессам для указанного хоста.
-+
-+#### Тело запроса
-+
-+<table>
-+  <thead>
-+    <tr>
-+      <th>Параметр</th>
-+      <th>Обязательность</th>
-+      <th>Тип</th>
-+      <th>Описание</th>
-+    </tr>
-+  </thead>
-+  <tbody>
-+    <tr>
-+      <td><code>selectors[].name</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.name.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].namespace</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.namespace.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].comm</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.comm.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].family</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.family.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].ifname</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.ifname.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].inode</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.inode.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].localAddr</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.localAddr.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].localPort</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.localPort.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].pid</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.pid.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].protocol</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.protocol.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].remoteAddr</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.remoteAddr.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].remotePort</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.remotePort.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].state</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.state.short}</td>
-+    </tr>
-+  </tbody>
-+</table>
-+
-+#### Примеры запроса
-+
-+:::info Правила комбинирования
-+- Между элементами массива `selectors[]` действует логическое **ИЛИ** (OR).
-+- Для хоста в `refs[]` допустим только `resType: "AddressGroup"`.
-+:::
-+
-+<Tabs groupId="host-list">
-+  <TabItem value="name" label="name" default>
-+
-+<CodeBlock language="bash">
-+  {dedent`
-+    curl -X POST http://localhost:9006/v1/hosts/nft/list \\
-+      -H 'Content-Type: application/json' \\
-+      -d '{
-+        "selectors": [
-+          {
-+              "filters": [
-+                {
-+                  "comm": "nginx",
-+                  "family": "IPV4",
-+                  "ifname": "eth0",
-+                  "inode": "789012",
-+                  "localAddr": "192.168.1.10",
-+                  "localPort": 443,
-+                  "pid": 4782,
-+                  "protocol": "TCP",
-+                  "remoteAddr": "10.0.0.5",
-+                  "remotePort": 443,
-+                  "state": "LISTEN"
-+                }
-+              ],
-+              "name": "node-01",
-+              "namespace": "production"
-+          }
-+        ]
-+      }'
-+  `}
-+</CodeBlock>
-+
-+  </TabItem>
-+</Tabs>
-+
-+#### Поля ответа
-+
-+<table>
-+  <thead>
-+    <tr>
-+      <th>Поле</th>
-+      <th>Тип</th>
-+      <th>Описание</th>
-+    </tr>
-+  </thead>
-+  <tbody>
-+    <tr>
-+      <td><code>hosts[].name</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.name.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].namespace</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.namespace.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].family</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.family.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].ifname</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.ifname.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].inode</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.inode.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].localAddr</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.localAddr.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].localPort</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.localPort.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].processes[].cmdLine</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.cmdLine.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].processes[].comm</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.comm.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].processes[].exe</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.exe.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].processes[].fd</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.fd.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].processes[].pid</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.pid.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].pid</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.pid.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].protocol</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.protocol.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].remoteAddr</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.remoteAddr.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].remotePort</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.remotePort.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].state</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.state.short}</td>
-+    </tr>
-+  </tbody>
-+</table>
-+
-+#### Пример ответа
-+
-+<CodeBlock language="json">
-+  {dedent`
-+    {
-+  "hosts": [
-+    {
-+      "name": "node-01",
-+      "namespace": "production",
-+      "stats": [
-+        {
-+          "family": "IPV4",
-+          "ifname": "eth0",
-+          "inode": "eth0",
-+          "localAddr": "192.168.1.10",
-+          "localPort": 443,
-+          "processes": [
-+            {
-+              "cmdLine": "/app/main.py --port 8080",
-+              "comm": "nginx",
-+              "exe": "/usr/sbin/nginx",
-+              "fd": 256,
-+              "pid": 4782
-+            }
-+          ],
-+          "protocol": "TCP",
-+          "remoteAddr": "10.0.0.5",
-+          "remotePort": 443,
-+          "state": "LISTEN"
-+        }
-+      ]
-+    }
-+  ]
-+}
-+  `}
-+</CodeBlock>
-+
-+<Restrictions items={[
-+  { label: 'selectors', rules: RESTRICTIONS.selectors },
-+]} />
-+
-+<Codes codes={['invalidArgument', 'internal']} />
-+
-+</ApiOperation>
-+
-+---
-+
-+## ss/Watch
-+
-+<ApiOperation method="POST" endpoint="/v1/hosts/ss/Watch">
-+
-+ Серверный стриминг — возвращает поток изменений сетевых соединений (TCP/UDP) c привязкой к процессам для указанного хоста.
-+
-+#### Тело запроса
-+
-+<table>
-+  <thead>
-+    <tr>
-+      <th>Параметр</th>
-+      <th>Обязательность</th>
-+      <th>Тип</th>
-+      <th>Описание</th>
-+    </tr>
-+  </thead>
-+  <tbody>
-+    <tr>
-+      <td><code>selectors[].name</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.name.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].namespace</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.namespace.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].comm</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.comm.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].family</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.family.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].ifname</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.ifname.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].inode</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.inode.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].localAddr</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.localAddr.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].localPort</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.localPort.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].pid</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.pid.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].protocol</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.protocol.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].remoteAddr</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.remoteAddr.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].remotePort</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.remotePort.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>selectors[].filters[].state</code></td>
-+      <td>нет</td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.state.short}</td>
-+    </tr>
-+  </tbody>
-+</table>
-+
-+#### Примеры запроса
-+
-+:::info Правила комбинирования
-+- Между элементами массива `selectors[]` действует логическое **ИЛИ** (OR).
-+- Для хоста в `refs[]` допустим только `resType: "AddressGroup"`.
-+:::
-+
-+<Tabs groupId="host-list">
-+  <TabItem value="name" label="name" default>
-+
-+<CodeBlock language="bash">
-+  {dedent`
-+    curl -X POST http://localhost:9006/v1/hosts/nft/list \\
-+      -H 'Content-Type: application/json' \\
-+      -d '{
-+        "selectors": [
-+          {
-+              "filters": [
-+                {
-+                  "comm": "nginx",
-+                  "family": "IPV4",
-+                  "ifname": "eth0",
-+                  "inode": "789012",
-+                  "localAddr": "192.168.1.10",
-+                  "localPort": 443,
-+                  "pid": 4782,
-+                  "protocol": "TCP",
-+                  "remoteAddr": "10.0.0.5",
-+                  "remotePort": 443,
-+                  "state": "LISTEN"
-+                }
-+              ],
-+              "name": "node-01",
-+              "namespace": "production"
-+          }
-+        ]
-+      }'
-+  `}
-+</CodeBlock>
-+
-+  </TabItem>
-+</Tabs>
-+
-+#### Поля ответа
-+
-+<table>
-+  <thead>
-+    <tr>
-+      <th>Поле</th>
-+      <th>Тип</th>
-+      <th>Описание</th>
-+    </tr>
-+  </thead>
-+  <tbody>
-+    <tr>
-+      <td><code>hosts[].name</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.name.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].namespace</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.namespace.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].family</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.family.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].ifname</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.ifname.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].inode</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.inode.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].localAddr</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.localAddr.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].localPort</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.localPort.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].processes[].cmdLine</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.cmdLine.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].processes[].comm</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.comm.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].processes[].exe</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.exe.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].processes[].fd</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.fd.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].processes[].pid</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.pid.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].pid</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.pid.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].protocol</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.protocol.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].remoteAddr</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.remoteAddr.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].remotePort</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.remotePort.short}</td>
-+    </tr>
-+    <tr>
-+      <td><code>hosts[].stats[].state</code></td>
-+      <td><code>{TYPES.string}</code></td>
-+      <td>{DICTIONARY.state.short}</td>
-+    </tr>
-+  </tbody>
-+</table>
-+
-+#### Пример ответа
-+
-+<CodeBlock language="json">
-+  {dedent`
-+    {
-+  "hosts": [
-+    {
-+      "name": "node-01",
-+      "namespace": "production",
-+      "stats": [
-+        {
-+          "family": "IPV4",
-+          "ifname": "eth0",
-+          "inode": "eth0",
-+          "localAddr": "192.168.1.10",
-+          "localPort": 443,
-+          "processes": [
-+            {
-+              "cmdLine": "/app/main.py --port 8080",
-+              "comm": "nginx",
-+              "exe": "/usr/sbin/nginx",
-+              "fd": 256,
-+              "pid": 4782
-+            }
-+          ],
-+          "protocol": "TCP",
-+          "remoteAddr": "10.0.0.5",
-+          "remotePort": 443,
-+          "state": "LISTEN"
-+        }
-+      ]
-+    }
-+  ]
-+}
-+  `}
-+</CodeBlock>
-+
-+<Restrictions items={[
-+  { label: 'selectors', rules: RESTRICTIONS.selectors },
-+]} />
-+
-+<Codes codes={['invalidArgument', 'internal']} />
-+
-+</ApiOperation>
-+
-+---
-+
- ## Watch
- 
- <ApiOperation method="POST" endpoint="/v1/hosts/watch">
-@@ -761,7 +1585,7 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
- 
- ---
- 
--## Обновление IP-адресов
-+## upd-ips
- 
- <ApiOperation method="POST" endpoint="/v1/hosts/upd-ips">
- 
-@@ -888,7 +1712,7 @@ import { ApiOperation } from '@site/src/components/commonBlocks/ApiOperation'
- 
- ---
- 
--## Обновление метаинформации
-+## upd-metainfo
- 
- <ApiOperation method="POST" endpoint="/v1/hosts/upd-metainfo">
- 
->>>>>>> 619210e (upd socket list and nft list documentation)
